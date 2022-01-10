@@ -1,0 +1,32 @@
+@Library('shared-starter') _
+pipeline {
+  agent { label 'linux' }
+  options {
+    skipDefaultCheckout()
+  }
+  stages {
+    stage("test") {
+      steps {
+        dir("default") {
+           checkout scm
+        }
+      }
+    }
+    stage("server check") {
+      when {
+        expression { return evenOdd() }
+      }
+      steps {
+        dir("foobar") {
+            sh "git clone https://github.com/darinpope/cjp-demo-environment.git"
+        }
+        fail()
+      }
+      post {
+        failure {
+          echo "failed"
+        }
+      }
+    }
+  }
+}

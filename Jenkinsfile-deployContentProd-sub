@@ -1,0 +1,19 @@
+@Library("shared-starter") _
+pipeline {
+    agent any
+
+    triggers {
+        eventTrigger jmespathQuery("event=='deploy-content-prod'")
+    }
+    parameters { 
+        string(name: 'version', defaultValue: '', description: 'What is the deployment environment?') 
+        choice(name: 'application', choices: ['One', 'Two', 'Three'], description: 'Pick an application')
+    }
+    stages {
+        stage('deployContentProd') {
+            steps {
+                deployContentProd()
+            }
+        }
+    }
+}

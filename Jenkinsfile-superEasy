@@ -1,0 +1,7 @@
+@Library('shared-starter') _
+superEasyPipeline {
+    osConfiguration = [
+        OS_VERSION: 'linux',
+        DIR_TYPE: 'build'
+    ]
+}

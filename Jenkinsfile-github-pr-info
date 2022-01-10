@@ -1,0 +1,15 @@
+@Library("shared-starter") _
+pipeline {
+  agent any
+  environment {
+    GITHUB_TOKEN = credentials("gh-token-only")
+  }
+  stages {
+    stage("pr info") {
+      steps {
+        sh "env | sort"
+        getPullRequestInfo(owner:"darinpope", repo:"marker-file-demo", pullNumber: "2")
+      }
+    }
+  }
+}

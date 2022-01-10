@@ -1,0 +1,27 @@
+// https://github.com/jfrog/project-examples/tree/master/msbuild-example
+pipeline {
+  agent any
+  stages {
+    stage("Build") {
+      steps {
+        bat "msbuild /t:build"
+      }
+    }
+    //stage("SonarQube Scan") {
+    //  steps {
+    //    bat "echo sonarqube"
+    //  }
+    //}
+    stage("Push to Artifactory") {
+      steps {
+        bat "msbuild /p:ArtifactoryPublish=true"
+      }
+    }
+    stage('Publish deploy event') {
+      when { branch 'develop' }
+      steps {
+        publishEvent simpleEvent('deployMyCode')
+      }
+    }
+  }
+}

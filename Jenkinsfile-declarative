@@ -1,0 +1,65 @@
+@Library('shared-starter') _
+pipeline {
+	agent any
+	stages {
+		stage("Prepare Build Environment") {
+			steps {
+				prepareBuildEnvironment()
+				helloWorld(name: "prepareBuildEnvironment")
+				helloWorldExternal()
+			}
+		}
+		stage("Source Code Checkout") {
+			steps {
+				echo 'scc'
+			}
+		}
+		stage("Only Even Build Number") {
+		    when { expression { return evenOdd() == true }}
+		    steps {
+		        echo "the build number is even ${env.BUILD_NUMBER}"
+		    }
+		}
+		stage("SonarQube Scan") {
+			when {
+				branch 'Development'
+			}
+			steps {
+				echo 'scan'
+			}
+		}
+		stage("Build Application") {
+			steps {
+				echo 'build'
+			}
+		}
+		stage("Stash") {
+			when { not { branch 'master' }}
+			steps {
+				stash(name:"${env.BUILD_JOB}")
+			}
+		}
+		stage("Publish Artifacts") {
+			steps {
+				publishArtifacts(name: "publishArtifacts")
+			}
+		}
+		stage("Deploy Application") {
+			steps {
+				deployApplication(name: "deployApplication")
+			}
+		}
+		stage("Unstash") {
+			when { not { branch 'master' }}
+			steps {
+				unstash(name:"${env.BUILD_JOB}")
+				echo "foobar"
+			}
+		}		
+	}
+	post {
+		always {
+			sendNotification()
+		}
+	}
+}
